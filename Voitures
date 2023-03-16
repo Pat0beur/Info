@@ -41,18 +41,52 @@ void initialiser(Route &r, size_t taille, int vmax) {
  * etre interessant de prevoir une fonction auxiliaire pour cela)
  */
 void ajouter(Route &r, int pos) {
-    int position; //garde la valeur de i
-    for(int i = pos; i < r.occupe.size(); i++){
+    r.voitures.resize(52);
+    r.occupe.resize(52);
+    int code;
+    for(int i = 0; i<52; i++){ // initialise le tableau à une taille de 52 rempli de '0', 0 et 0 pour respectivement l'identification, la position et la vitesse
+        r.occupe.at(i) = 0; // dit que la route ne comporte aucune voiture;
+        r.voitures.at(i).identification = '0'; // initialise le nom des voitures à '0'
+        r.voitures.at(i).position = 0; // initialise la position à 0
+        r.voitures.at(i).vitesse = 0; // initialise la vitesse à 0
+    }
+    int position = -1; //position garde la valeur de i
+    for(size_t i = pos; i < r.occupe.size(); i=i+1){ //cherche une partie de la route où il y a personne
         if(r.occupe.at(i) == 0){
             position = i;
             break;
         }
     }
-    r.occupe.at(position) = 1; // dis que la position est occupée par la voiture
-    r.voitures.resize(r.voitures.size() + 1); // donne la lettre d'après à la voiture
-    r.voitures.at(-1).identification = char(dispo(r));
-    r.voitures.at(-1).vitesse = 0;  //la vitesse de la voiture est nulle
-    r.voitures.at(-1).position = position;
+    if(position != -1){ // si une position vide a été trouvée
+        if(position+pos > 52){ //on test si la valeur de pos est supérieur à la taille du tableau
+            for(int k = 0; k<pos; k++){
+                if(r.occupe.at(k) == 0){
+                    position = k;
+                    break;
+                }
+            }
+        }
+        else{
+        r.occupe.at(position+pos) = 1; // occupe cette position
+    }
+    }
+    for(int j = 0; j< 52;j++){
+        if(r.voitures.at(0).identification == '0'){ //si aucune voiture est inialisé alors la première voiture prend l'identification 'A'
+            r.voitures.at(0).identification = char(65);
+        }
+        else{
+            code = r.voitures.at(j-1).identification; // code prend la valeur de l'indice précédent pour donner le nom de la prochaine voiture
+            if(code == 90){
+                r.voitures.at(j).identification = char(97); // si la voiture précédente s'appelle 'Z' alors la prochaine prendra la valeur de 'a'
+            }
+            else{
+                r.voitures.at(j).identification = char(code+1); //sinon la lettre d'après
+            }
+            r.voitures.at(j).position = position; // donne la position de la voiture
+            break;
+        }
+    }
+    
 }
 
 void accelerer(Route &r) {
