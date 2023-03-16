@@ -11,28 +11,33 @@ int saVitesse(Route const &r, char Id);
 bool aRalenti(Route const &r, char Id);
 void setPV(Route &r, double newPV), setVMax(Route &r, int newVMax);
 
-int dispo(Route r){ //récup l'id de la dernière voiture
-    int maxvoiture = 0, code;
-    code = r.voitures.at(-1).identification;
-    if(code == 90){
-        return 97;
-    }
-    else{
-        return code+1;
-    }
-}
-
 // Les fonctions que vous écrivez peuvent prevoir d'afficher des messages de
 // debug quand cette variable globale vaut true
 bool debug = true;
 
 
 void initialiser(Route &r, size_t taille, int vmax) {
+  r.voitures.clear();
   r.occupe = vector<int> (taille);
   r.vmax = vmax;
   r.pv = 0;
 }
 
+char nommer_voiture(Route r){
+  if(r.voitures.size() == 1){ //Si c'est la première case, donne A
+    return 'A';
+  }
+  else{
+    int code; //Code ASCII du char
+    code = r.voitures.at(r.voitures.size()-2).identification;
+    if(code == 90){ //Si c'est un Z, renvoi a
+      return char(97);
+    }
+    else{ // Renvoi la lettre suivante
+      return char(code+1);
+    }
+  }
+}
 
 /* ajouter une voiture a partir de la premiere position libre a partir
  * d'une position donnee
@@ -41,56 +46,19 @@ void initialiser(Route &r, size_t taille, int vmax) {
  * etre interessant de prevoir une fonction auxiliaire pour cela)
  */
 void ajouter(Route &r, int pos) {
-    r.voitures.resize(52);
-    r.occupe.resize(52);
-    int code;
-    for(int i = 0; i<52; i++){ // initialise le tableau à une taille de 52 rempli de '0', 0 et 0 pour respectivement l'identification, la position et la vitesse
-        r.occupe.at(i) = 0; // dit que la route ne comporte aucune voiture;
-        r.voitures.at(i).identification = '0'; // initialise le nom des voitures à '0'
-        r.voitures.at(i).position = 0; // initialise la position à 0
-        r.voitures.at(i).vitesse = 0; // initialise la vitesse à 0
-    }
-    int position = -1; //position garde la valeur de i
-    for(size_t i = pos; i < r.occupe.size(); i=i+1){ //cherche une partie de la route où il y a personne
-        if(r.occupe.at(i) == 0){
-            position = i;
-            break;
-        }
-    }
-    if(position != -1){ // si une position vide a été trouvée
-        if(position+pos > 52){ //on test si la valeur de pos est supérieur à la taille du tableau
-            for(int k = 0; k<pos; k++){
-                if(r.occupe.at(k) == 0){
-                    position = k;
-                    break;
-                }
-            }
-        }
-        else{
-        r.occupe.at(position+pos) = 1; // occupe cette position
-    }
-    }
-    for(int j = 0; j< 52;j++){
-        if(r.voitures.at(0).identification == '0'){ //si aucune voiture est inialisé alors la première voiture prend l'identification 'A'
-            r.voitures.at(0).identification = char(65);
-        }
-        else{
-            code = r.voitures.at(j-1).identification; // code prend la valeur de l'indice précédent pour donner le nom de la prochaine voiture
-            if(code == 90){
-                r.voitures.at(j).identification = char(97); // si la voiture précédente s'appelle 'Z' alors la prochaine prendra la valeur de 'a'
-            }
-            else{
-                r.voitures.at(j).identification = char(code+1); //sinon la lettre d'après
-            }
-            r.voitures.at(j).position = position; // donne la position de la voiture
-            break;
-        }
-    }
-    
+  int i=pos;
+  while(r.occupe.at(i)==1){ //Trouve la prochaine case vide
+    i++;
+  }
+  r.occupe.at(i)=1; // Met 1 dans la case correspondante pour dire qu'elle est maintenant occupé
+  r.voitures.resize(r.voitures.size()+1); // Augmente de 1 la taille de voitures
+  r.voitures.at(r.voitures.size()-1).position = i; // Position de la voiture correspond à l'indice case vide
+  r.voitures.at(r.voitures.size()-1).vitesse = 0; //Vitesse = 0
+  r.voitures.at(r.voitures.size()-1).identification = nommer_voiture(r); 
 }
 
 void accelerer(Route &r) {
-  // a faire
+  
 }
 
 
@@ -116,7 +84,7 @@ void afficherR(Route const &r) {
       buf.at(i) = ' ';
     }
     else{
-      for(int j=0 ; i<MAX ; j++){ //Test toutes les voitures pour savoir laquelle correspond à la case occupée
+      for(int j=0 ; j<r.voitures.size() ; j++){ //Test toutes les voitures pour savoir laquelle correspond à la case occupée
         if(r.voitures.at(j).position == i){
           buf.at(i) = r.voitures.at(j).identification; //On met le nom de la voiture qui occupe la case
           break;
@@ -306,4 +274,3 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
-
