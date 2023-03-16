@@ -99,13 +99,21 @@ void afficherR(Route const &r) {
 
 
 void freiner(Route &r) {
-    int case_libre = 1;
+    int position, case_libre =0, j;
     for(int i = 0; i < r.voitures.size(); i++){ // applique la fonction à toutes les voitures
-        while(r.occupe.at(i+case_libre) == 0){ // prend la valeur du nombre de case libre devant lui
-            case_libre = case_libre +1;
+        position = r.voitures.at(i).position;
+        if(position+1 == r.occupe.size()){
+            position = 0;
+        }
+        j = position;
+        while(r.occupe.at(j + 1) == 0){ // prend la valeur du nombre de case libre devant lui
+            if(j+1 == r.occupe.size()){
+                j = 0;
+            }
+            j = j+1;
     }
-    if(case_libre < r.voitures.at(i).vitesse){ //si le nb de case libre est inférieur à la vitesse alors la voiture freine à la vitesse du nb de case libre
-    r.voitures.at(i).vitesse = case_libre;
+    if(case_libre-1 < r.voitures.at(i).vitesse){ //si le nb de case libre est inférieur à la vitesse alors la voiture freine à la vitesse du nb de case libre
+    r.voitures.at(i).vitesse = case_libre-1;
     }
   }
 }
