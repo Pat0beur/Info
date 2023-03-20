@@ -60,7 +60,8 @@ void ajouter(Route &r, int pos) {
 void accelerer(Route &r) {
   for(int i = 0;i < r.voitures.size(); i++){ // vérifie toutes les voitures dans le vecteur voitures
       if(r.voitures.at(i).vitesse < r.vmax){ // si la vitesse de la voiture est inférieure à vmax alors +1
-          r.voitures.at(i).vitesse = r.voitures.at(i).vitesse + 1;
+        cout<< "Acceleration pour " << r.voitures.at(i).identification << endl;
+        r.voitures.at(i).vitesse++;
       }
   }
 }
@@ -98,8 +99,26 @@ void afficherR(Route const &r) {
   cout << buf << endl;
 }
 
+//une voiture qui a d cellules vides devant elle mais une vitesse v (après
+//l'étape 1) supérieure à d réduit sa vitesse à la valeur d.
 void freiner(Route &r) {
-    
+/*  for(int i=0 ; i<r.voitures.size()-1 ; i++){ //Test toutes les voitures
+    int pos_voit1 = r.voitures.at(i).position , pos_voit2 = r.voitures.at(i+1).position; //Récupère la position de 2 voitures consécutives
+    int distance = 0;
+    if(pos_voit2 - pos_voit1 < 0){ //Si < 0, alors la voiture 2 est revenue au début de la route
+      distance = r.occupe.size() - pos_voit1 + pos_voit2-1;
+    }
+    else{ // Sinon on fait juste la différence des position (-1 car on veut juste les cases vides entre les 2 voitures)
+      distance = pos_voit2 - pos_voit1-1;
+    }
+    if(distance < r.voitures.at(i).vitesse){ //Si distance < vitesse --> vitesse = distance
+      r.voitures.at(i).vitesse = distance;
+      cout << "Freinage de sécurité pour " << r.voitures.at(i).identification << endl;
+    }
+  }*/
+
+  //PAS BON CAR LES VOITURES PEUVENT SE DOUBLER DONC NE SONT PAS FORCEMENT DANS L'ODRE ALPHABETIQUE
+  // EXEMPLE ON PEUT AVOIR (B     A  C)
 }
 
 void ralentir(Route &r) {
@@ -111,10 +130,11 @@ void ralentir(Route &r) {
 
 void deplacer(Route &r) {
   for(int i=0 ; i<r.voitures.size() ; i++){
-    r.voitures.at(i).position = r.voitures.at(i).position + r.voitures.at(i).vitesse;
-    if(r.voitures.at(i).position > r.occupe.size()){
+    r.occupe.at(r.voitures.at(i).position) = 0; // Met à 0 la case avant de bouger
+    r.voitures.at(i).position = r.voitures.at(i).position + r.voitures.at(i).vitesse; // Voiture avantce du nombre de cases de sa vitesse
+    if(r.voitures.at(i).position >= r.occupe.size()){ // Si la voiture dépasse la taille de occupe, elle repars du début
       r.voitures.at(i).position = r.voitures.at(i).position - r.occupe.size();
-    }
+    }r.occupe.at(r.voitures.at(i).position) = 1; // La case d'arrivée de la voiture est maintenant occupée
   }
 }
 
