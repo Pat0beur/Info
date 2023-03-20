@@ -18,6 +18,7 @@ bool debug = true;
 
 void initialiser(Route &r, size_t taille, int vmax) {
   r.voitures.clear();
+  r.occupe.clear();
   r.occupe = vector<int> (taille);
   r.vmax = vmax;
   r.pv = 0;
@@ -119,6 +120,45 @@ void freiner(Route &r) {
 
   //PAS BON CAR LES VOITURES PEUVENT SE DOUBLER DONC NE SONT PAS FORCEMENT DANS L'ODRE ALPHABETIQUE
   // EXEMPLE ON PEUT AVOIR (B     A  C)
+
+  //Il faut faire un truc en fonction du vector occupe
+
+  int compteur_voitures=0;
+  int voiture1;
+
+  for(int i=0 ; i < r.occupe.size() ; i++){
+    int distance;
+    if(r.occupe.at(i) == 1){ //Des qu'il trouve une voiture
+      compteur_voitures++;
+      if(compteur_voitures = 1){ //Garde en memoire la position de la première voiture pour la distance avec la dernière voiture
+        voiture1 = i;
+      }
+      if(compteur_voitures < r.voitures.size()){ //Test toutes les voitures sauf la dernière car particulière
+        for(int j=i+1 ; j < r.occupe.size() ; j++){ // Cherche la voiture d'après
+          if(r.occupe.at(j) == 1){//trouve la position de la voiture d'après
+            distance = j - i - 1; // Calcul de la distance entre les 2 voitures (-1 car on veut les cases vides entre les voitures)
+            for(int k=0 ; k < r.voitures.size() ; k++){ // Trouve la voiture correspondante à i
+              if( (r.voitures.at(k).position = i) && (r.voitures.at(k).vitesse > distance) ){ //Si vitesse > distance
+                r.voitures.at(k).vitesse = distance; // vitesse = distance
+                cout << r.voitures.at(k).vitesse << endl;
+                break; //On peut sortir de la boucle car c'était la voiture qui nous intéressait
+              }
+            }
+          }
+        }
+      }
+      else{
+        distance = r.occupe.size() - i + voiture1 -1;
+        for(int k=0 ; k < r.voitures.size() ; k++){ // Trouve la voiture correspondante à i
+              if( (r.voitures.at(k).position = i) && (r.voitures.at(k).vitesse > distance) ){ //Si vitesse > distance
+                r.voitures.at(k).vitesse = distance; // vitesse = distance
+                cout << r.voitures.at(k).vitesse << " XX " << endl;
+                break; //On peut sortir de la boucle car c'était la voiture qui nous intéressait
+              }
+            }
+      }
+    }
+  }
 }
 
 void ralentir(Route &r) {
