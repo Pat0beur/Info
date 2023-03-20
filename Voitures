@@ -56,10 +56,11 @@ void ajouter(Route &r, int pos) {
   r.voitures.at(r.voitures.size()-1).vitesse = 0; //Vitesse = 0
   r.voitures.at(r.voitures.size()-1).identification = nommer_voiture(r); 
 }
+
 void accelerer(Route &r) {
   for(int i = 0;i < r.voitures.size(); i++){ // vérifie toutes les voitures dans le vecteur voitures
       if(r.voitures.at(i).vitesse < r.vmax){ // si la vitesse de la voiture est inférieure à vmax alors +1
-          r.voiture.at(i).vitesse = r.voiture.at(i).vitesse + 1;
+          r.voitures.at(i).vitesse = r.voitures.at(i).vitesse + 1;
       }
   }
 }
@@ -97,27 +98,9 @@ void afficherR(Route const &r) {
   cout << buf << endl;
 }
 
-
 void freiner(Route &r) {
-    int position, case_libre =0, j;
-    for(int i = 0; i < r.voitures.size(); i++){ // applique la fonction à toutes les voitures
-        position = r.voitures.at(i).position;
-        if(position+1 == r.occupe.size()){
-            position = 0;
-        }
-        j = position;
-        while(r.occupe.at(j + 1) == 0){ // prend la valeur du nombre de case libre devant lui
-            if(j+1 == r.occupe.size()){
-                j = 0;
-            }
-            j = j+1;
-    }
-    if(case_libre-1 < r.voitures.at(i).vitesse){ //si le nb de case libre est inférieur à la vitesse alors la voiture freine à la vitesse du nb de case libre
-    r.voitures.at(i).vitesse = case_libre-1;
-    }
-  }
+    
 }
-
 
 void ralentir(Route &r) {
   // A FAIRE ULTERIEUREMENT
@@ -127,7 +110,12 @@ void ralentir(Route &r) {
 
 
 void deplacer(Route &r) {
-  // A faire
+  for(int i=0 ; i<r.voitures.size() ; i++){
+    r.voitures.at(i).position = r.voitures.at(i).position + r.voitures.at(i).vitesse;
+    if(r.voitures.at(i).position > r.occupe.size()){
+      r.voitures.at(i).position = r.voitures.at(i).position - r.occupe.size();
+    }
+  }
 }
 
 
@@ -163,6 +151,7 @@ int saVitesse (Route const &r, char Id) {
       if(r.voitures.at(i).identification == Id){ //teste les identifications des voitures pour retrouver la voiture
           res = r.voitures.at(i).vitesse; //si la voiture est trouvée alors on retourne la valeur de sa vitesse sinon la fonction retourne -1
       }
+  }
   return res;
 }
 
