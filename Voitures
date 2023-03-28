@@ -105,34 +105,23 @@ void afficherR(Route const &r) {
 //une voiture qui a d cellules vides devant elle mais une vitesse v (après
 //l'étape 1) supérieure à d réduit sa vitesse à la valeur d.
 void freiner(Route &r) {
-  int position, case_libre = 1, case_libre_d = 0;
-    for(int i = 0; i< r.voitures.size(); i++){
-        position = r.voitures.at(i).position;
-        int vitesse = r.voitures.at(i).vitesse;
-        if(position + case_libre == r.occupe.size()){
-            position = 0;
-            while(position+case_libre_d < r.occupe.size() && r.occupe.at(position+case_libre_d) == 0){
-                case_libre_d++;
-            }
-        }
-        else{
-            while(position+case_libre < r.occupe.size() && r.occupe.at(position+case_libre) == 0){ //vérifie si il y a une voiture ou non après
-                if(position + case_libre == r.occupe.size()){ //teste si on arrive au bout de la route
-                    position = 0;
-                    while(position+case_libre_d < r.occupe.size() && r.occupe.at(position+case_libre_d) == 0){
-                        case_libre_d++;
-                    }
-                }
-                else{
-                    case_libre++;
-                }
-            }
-        }
-        // Vérifier si la voiture doit freiner en fonction de la distance avec la voiture devant elle
-        if (case_libre < vitesse) {
-            r.voitures.at(i).vitesse = case_libre - 1;
-        }
+   for (int i = 0; i < r.voitures.size(); i++) { // Parcourir toutes les voitures dans le vecteur voitures
+    int position_actuelle = r.voitures.at(i).position;
+    int position_suivante = (position_actuelle + 1) % r.occupe.size();
+    int j = 0;
+
+    // Trouver le nombre de cellules vides (j) devant la voiture
+    while (r.occupe.at(position_suivante) == 0) {
+      j++;
+      position_suivante = (position_suivante + 1) % r.occupe.size();
     }
+
+    // Si la vitesse de la voiture est supérieure à j, réduire la vitesse à la valeur j
+    if (r.voitures.at(i).vitesse > j) {
+      cout << "Freinage de sécurité pour " << r.voitures.at(i).identification << endl;
+      r.voitures.at(i).vitesse = j;
+    }
+  }
 }
 
 double doubleRand() {
