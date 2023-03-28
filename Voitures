@@ -164,7 +164,21 @@ size_t voiture(Route const &r, char Id) {
 
 
 void afficherV(Route const &r, char Id) {
-  // A FAIRE
+  for (int i = 0; i < r.voitures.size(); i++) {
+    if (r.voitures.at(i).identification == Id) {
+      cout << "Voiture " << r.voitures.at(i).identification << " : " << endl;
+      cout << "  Position : " << r.voitures.at(i).position << endl;
+      cout << "  Vitesse : " << r.voitures.at(i).vitesse << endl;
+      cout << "  Ralenti : ";
+      if (r.voitures.at(i).ralenti) {
+        cout << "Oui" << endl;
+      }
+      else {
+        cout << "Non" << endl;
+      }
+      return;
+    }
+  }
 }
 
 /* fournie gracieusement */
