@@ -1,5 +1,7 @@
 
 #include "voitures.h"
+#include <unistd.h> // pour sleep()
+#include <ctime> // pour time()
 
 /* déclaration des fonctions définies */
 void  initialiser(Route &r, size_t taille, int vmax);
@@ -103,7 +105,7 @@ void afficherR(Route const &r) {
 //une voiture qui a d cellules vides devant elle mais une vitesse v (après
 //l'étape 1) supérieure à d réduit sa vitesse à la valeur d.
 void freiner(Route &r) {
-    int position, case_libre = 1, case_libre_d = 0;
+  int position, case_libre = 1, case_libre_d = 0;
     for(int i = 0; i< r.voitures.size(); i++){
         position = r.voitures.at(i).position;
         int vitesse = r.voitures.at(i).vitesse;
@@ -133,10 +135,27 @@ void freiner(Route &r) {
     }
 }
 
+double doubleRand() {
+    return ((double) rand()) / (((double) RAND_MAX) + 1.0);
+}
+
+void resetRand(bool mode) {
+    srand(mode ? time(nullptr) : 1);
+}
+
 void ralentir(Route &r) {
-  // A FAIRE ULTERIEUREMENT
-  // pour l'instant pv vaut tjrs 0 donc il n'y a pas de ralentissement
-  // aleatoire.
+  for (int i = 0; i < r.voitures.size(); i++) {
+    double random_number = doubleRand();
+    if (random_number < r.pv) {
+      if (r.voitures.at(i).vitesse > 0) {
+        r.voitures.at(i).vitesse -= 1;
+        r.voitures.at(i).ralenti = true;
+      }
+    } 
+    else {
+      r.voitures.at(i).ralenti = false;
+    }
+  }
 }
 
 
@@ -300,6 +319,7 @@ void test1Ter() {
   ajouter(r, 7); ajouter(r, 1);
   cout << "Ajout des voitures \n";
   afficherR(r);
+  setPV(r, 0.5);
   simuler(r, 11);
   afficherR(r);
   // une voiture s'incruste devant A.
@@ -332,6 +352,8 @@ int main(int argc, char *argv[]) {
   test1();
   test1Bis();
   test1Ter();
+  resetRand(true);
+
 
   return 0;
 }
