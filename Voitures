@@ -195,16 +195,21 @@ bool aRalenti(Route const &r, char Id) {
 }
 
 void setPV(Route &r, double newPV) {
-  // A FAIRE
+  r.pv = newPV;
 }
 
 void setVMax(Route &r, int newVMax) {
-  // A FAIRE
+  r.vmax = newVMax;
 }
 
 /* supprimer la voiture de nom donne, si elle existe, sinon ne fait rien */
 void supprimer(Route &r, char Id) {
-  // A FAIRE
+  for (int i = 0; i < r.voitures.size(); i++) {
+    if (r.voitures.at(i).identification == Id) {
+        r.voitures.erase(r.voitures.begin() + i);
+        break;
+    }
+  }
 }
 
 
