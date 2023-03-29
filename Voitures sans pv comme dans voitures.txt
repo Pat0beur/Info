@@ -307,10 +307,7 @@ void test1Ter() {
   afficherR(r);
   ajouter(r, 7); ajouter(r, 1);
   cout << "Ajout des voitures \n";
-  afficherR(r);
-
-  setPV(r, 0.5);
-  
+  afficherR(r);  
   simuler(r, 11);
   afficherR(r);
   // une voiture s'incruste devant A.
