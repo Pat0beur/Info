@@ -3,7 +3,7 @@
 #include <unistd.h> // pour sleep()
 #include <ctime> // pour time()
 
-/* déclaration des fonctions définies */
+// déclaration des fonctions définies
 void  initialiser(Route &r, size_t taille, int vmax);
 void accelerer(Route &r), freiner(Route &r), ralentir(Route &r), deplacer(Route &r);
 void ajouter(Route &r, int position), supprimer(Route &r, char Id);
@@ -18,6 +18,7 @@ void setPV(Route &r, double newPV), setVMax(Route &r, int newVMax);
 bool debug = true;
 
 
+// Initialise la route
 void initialiser(Route &r, size_t taille, int vmax) {
   r.voitures.clear();
   r.occupe.clear();
@@ -26,69 +27,70 @@ void initialiser(Route &r, size_t taille, int vmax) {
   r.pv = 0;
 }
 
+/* Nommer une nouvelle voiture
+ * Les voitures sont nommées dans l'ordre alphabétique, et de majuscule à minuscule : A-Z puis a-z
+ * Renvoi la lettre de la dernière voiture créée, plus 1 (E --> Z) (Z --> a)
+*/
 char nommer_voiture(Route r){
-  if(r.voitures.size() == 1){ //Si c'est la première case, donne A
+  if(r.voitures.size() == 1){
     return 'A';
   }
   else{
-    int code; //Code ASCII du char
+    int code;
     code = r.voitures.at(r.voitures.size()-2).identification;
-    if(code == 90){ //Si c'est un Z, renvoi a
+    if(code == 90){
       return char(97);
     }
-    else{ // Renvoi la lettre suivante
+    else{
       return char(code+1);
     }
   }
 }
 
-/* ajouter une voiture a partir de la premiere position libre a partir
- * d'une position donnee
- * Pour nommer la voiture il faut connaitre la prochaine lettre a utiliser
- * et mémoriser que cette lettre ne sera donc plus utilisable (il peut
- * etre interessant de prevoir une fonction auxiliaire pour cela)
- */
+// ajouter une voiture a partir de la premiere position libre a partir d'une position donnée (pos)
 void ajouter(Route &r, int pos) {
   int i=pos;
-  while(r.occupe.at(i)==1){ //Trouve la prochaine case vide
+  while(r.occupe.at(i)==1){ // Trouve la prochaine case vide
     i++;
   }
-  r.occupe.at(i)=1; // Met 1 dans la case correspondante pour dire qu'elle est maintenant occupé
+  r.occupe.at(i)=1; // Met '1' dans la case correspondante pour dire qu'elle est maintenant occupé
   r.voitures.resize(r.voitures.size()+1); // Augmente de 1 la taille de voitures
-  r.voitures.at(r.voitures.size()-1).position = i; // Position de la voiture correspond à l'indice case vide
-  r.voitures.at(r.voitures.size()-1).vitesse = 0; //Vitesse = 0
-  r.voitures.at(r.voitures.size()-1).identification = nommer_voiture(r); //Donne à la voiture la prochaîne lettre non attribiuée (de 'A' à 'Z' puis de 'a' à 'z')
+  r.voitures.at(r.voitures.size()-1).position = i; // Position de la voiture correspond à l'indice de la case vide
+  r.voitures.at(r.voitures.size()-1).vitesse = 0; // Vitesse = 0
+  r.voitures.at(r.voitures.size()-1).identification = nommer_voiture(r); // Nomme la voiture
 }
 
+// Accélère les voitures en dessous de vmax d'une unité
 void accelerer(Route &r) {
-  for(int i = 0;i < r.voitures.size(); i++){ // vérifie toutes les voitures dans le vecteur voitures
-      if(r.voitures.at(i).vitesse < r.vmax){ // si la vitesse de la voiture est inférieure à vmax alors +1
-        cout<< "Acceleration pour " << r.voitures.at(i).identification << endl;
-        r.voitures.at(i).vitesse++;
-      }
+  for(int i = 0;i < r.voitures.size(); i++){ // Test pour toutes les voitures
+    if(r.voitures.at(i).vitesse < r.vmax){ // Si la vitesse de la voiture est inférieure à vmax
+      cout << "Acceleration pour " << r.voitures.at(i).identification << endl;
+      r.voitures.at(i).vitesse++; // Augmente de 1 la vitesse de la voiture
+    }
   }
 }
 
+// Affiche la route avec les voitures
 void afficherR(Route const &r) {
   int i, MAX;
-  MAX = r.occupe.size();
+  MAX = r.occupe.size(); // Taille de la route
 
-  string buf(MAX, '.'); // initilaise buf avec des points
+  string buf(MAX, '.'); // Initilaise buf avec des points
 
-  // ecriture d'une ligne d'en-tete. On modifie buf a certains endroits
+  // Ecriture d'une ligne d'en-tete. On modifie buf a certains endroits
   // pour mettre des + ou des |, puis on affiche buf.
   for(i=9; i < MAX; i += 10) { buf.at(i) = '|'; }
   for(i=4; i < MAX; i += 10) { buf.at(i) = '+'; }
   cout << buf << endl;
 
-  for(i=0; i < MAX; i++) {
-    if(r.occupe.at(i) == 0){ //Si case n'est pas occupé, on met un espace
+  for(i=0; i < MAX; i++){
+    if(r.occupe.at(i) == 0){ // Si la case n'est pas occupé, on met un espace
       buf.at(i) = ' ';
     }
     else{
-      for(int j=0 ; j<r.voitures.size() ; j++){ //Test toutes les voitures pour savoir laquelle correspond à la case occupée
+      for(int j=0 ; j<r.voitures.size() ; j++){ // Test toutes les voitures pour savoir laquelle correspond à la case occupée
         if(r.voitures.at(j).position == i){
-          buf.at(i) = r.voitures.at(j).identification; //On met le nom de la voiture qui occupe la case
+          buf.at(i) = r.voitures.at(j).identification; // On met le nom de la voiture qui occupe la case
           break;
         }
       }
@@ -99,38 +101,43 @@ void afficherR(Route const &r) {
 
 //une voiture qui a d cellules vides devant elle mais une vitesse v (après
 //l'étape 1) supérieure à d réduit sa vitesse à la valeur d.
-void freiner(Route &r) {
-   for (int i = 0; i < r.voitures.size(); i++) { // Parcourir toutes les voitures dans le vecteur voitures
+void freiner(Route &r){
+  for (int i = 0; i < r.voitures.size(); i++){ // Test toutes les voitures dans le vecteur voitures
     int position_actuelle = r.voitures.at(i).position;
     int position_suivante = (position_actuelle + 1) % r.occupe.size();
     int j = 0;
 
-    // Trouver le nombre de cellules vides (j) devant la voiture
-    while (r.occupe.at(position_suivante) == 0) {
-      j++;
+    while (r.occupe.at(position_suivante) == 0){ // Trouve le nombre de cellules vides (j) devant la voiture
+      j++; 
       position_suivante = (position_suivante + 1) % r.occupe.size();
     }
-
-    // Si la vitesse de la voiture est supérieure à j, réduire la vitesse à la valeur j
-    if (r.voitures.at(i).vitesse > j) {
-      cout << "Freinage de sécurité pour " << r.voitures.at(i).identification << endl; // Si une voiture freine alors il dit quelle voiture freine
+    if (r.voitures.at(i).vitesse > j){ // Si la vitesse de la voiture est supérieure à j, réduire la vitesse à la valeur j
+      cout << "Freinage de sécurité pour " << r.voitures.at(i).identification << endl; // Si une voiture freine on dit qu'elle freine
       r.voitures.at(i).vitesse = j;
     }
   }
 }
 
-double doubleRand() {
-    return ((double) rand()) / (((double) RAND_MAX) + 1.0); //jsp
+// Génère un nombre aléatoire double compris entre 0 (inclus) et 1 (exclus).
+double doubleRand(){
+  // Convertit un nombre entier aléatoire (généré par rand()) en un double,
+  // puis le divise par (RAND_MAX + 1.0) pour obtenir un résultat entre 0 et 1.
+  return ((double) rand()) / (((double) RAND_MAX) + 1.0);
 }
 
-void resetRand(bool mode) {
-    srand(mode ? time(nullptr) : 1); //jsp
+// Cette fonction réinitialise le générateur de nombres aléatoires avec une nouvelle graine.
+void resetRand(bool mode){
+  // Si mode est vrai (true), la fonction utilise le temps actuel (time(nullptr))
+  // comme graine pour initialiser le générateur de nombres aléatoires (srand()).
+  // Sinon, elle utilise la valeur 1 comme graine.
+  srand(mode ? time(nullptr) : 1);
 }
 
-void ralentir(Route &r) {
-  for (int i = 0; i < r.voitures.size(); i++) { //Parcours le vecteur voiture
-    double random_number = doubleRand(); //prend un nombre au hasard entre 0.0 et 1.0
-    if (random_number < r.pv) { //si le nombre aléatoire est inférieur à la probabilité alors la voiture ralenti d'une unité et ralenti = true
+// Fait ralentir aléatoirement les voitures
+void ralentir(Route &r){
+  for(int i = 0; i < r.voitures.size(); i++){
+    double random_number = doubleRand(); // Prend un nombre au hasard entre 0.0 et 1.0
+    if (random_number < r.pv) { // Si le nombre aléatoire est inférieur à la probabilité alors la voiture ralenti d'une unité et ralenti = true
       if (r.voitures.at(i).vitesse > 0) {
         r.voitures.at(i).vitesse -= 1;
         r.voitures.at(i).ralenti = true;
@@ -142,46 +149,34 @@ void ralentir(Route &r) {
   }
 }
 
-
+// Chaque voiture avance du nombre de cellules correspondant à sa vitesse
 void deplacer(Route &r) {
   for(int i=0 ; i<r.voitures.size() ; i++){
     r.occupe.at(r.voitures.at(i).position) = 0; // Met à 0 la case avant de bouger
-    r.voitures.at(i).position = r.voitures.at(i).position + r.voitures.at(i).vitesse; // Voiture avantce du nombre de cases de sa vitesse
+    r.voitures.at(i).position = r.voitures.at(i).position + r.voitures.at(i).vitesse; // Voiture avance du nombre de cases de sa vitesse
     if(r.voitures.at(i).position >= r.occupe.size()){ // Si la voiture dépasse la taille de occupe, elle repars du début
       r.voitures.at(i).position = r.voitures.at(i).position - r.occupe.size();
     }r.occupe.at(r.voitures.at(i).position) = 1; // La case d'arrivée de la voiture est maintenant occupée
   }
 }
 
-
-
-
-/* fonction auxiliaire optionnelle : renvoie l'indice de la voiture nommée Id
- * dans le vecteur des voitures de r
- */
-size_t voiture(Route const &r, char Id) {
-  size_t res = 314; // valeur arbitraire
-  // A FAIRE si vous avez besoin d'une telle fonction
-  return res;
-}
-
-
+// Affiche des informations sur la voiture Id
 void afficherV(Route const &r, char Id) {
-    for (int i = 0; i < r.voitures.size(); i++) {
-        if (r.voitures.at(i).identification == Id) {
-          cout << "Voiture " << r.voitures.at(i).identification << " : " << endl;
-          cout << "  Position : " << r.voitures.at(i).position << endl;
-          cout << "  Vitesse : " << r.voitures.at(i).vitesse << endl;
-          cout << "  Ralenti : ";
-          if (r.voitures.at(i).ralenti) {
-            cout << "Oui" << endl;
-          }
-          else {
-            cout << "Non" << endl;
-          }
-          return;
-        }
+  for (int i = 0; i < r.voitures.size(); i++) {
+    if (r.voitures.at(i).identification == Id) {
+      cout << "Voiture " << r.voitures.at(i).identification << " : " << endl;
+      cout << "  Position : " << r.voitures.at(i).position << endl;
+      cout << "  Vitesse : " << r.voitures.at(i).vitesse << endl;
+      cout << "  Ralenti : ";
+      if (r.voitures.at(i).ralenti) {
+        cout << "Oui" << endl;
       }
+      else {
+        cout << "Non" << endl;
+      }
+      return;
+    }
+  }
 }
 
 /* fournie gracieusement */
@@ -194,37 +189,47 @@ void simuler(Route &r, int n) {
   }
 }
 
+// Renvoi la vitesse de la voiture demandée (Id)
 int saVitesse (Route const &r, char Id) {
   int res = -1; // valeur arbitraire
   for(int i = 0; i < r.voitures.size(); i++){
-      if(r.voitures.at(i).identification == Id){ //teste les identifications des voitures pour retrouver la voiture
-          res = r.voitures.at(i).vitesse; //si la voiture est trouvée alors on retourne la valeur de sa vitesse sinon la fonction retourne -1
+      if(r.voitures.at(i).identification == Id){ // Teste les identifications des voitures pour retrouver la voiture
+          res = r.voitures.at(i).vitesse; // Si la voiture est trouvée alors on retourne la valeur de sa vitesse sinon la fonction retourne -1
       }
   }
   return res;
 }
 
-
+// Si la voiture à ralenti, renvoie true, sinon false
 bool aRalenti(Route const &r, char Id) {
   bool res = false ; // valeur arbitraire
-  // A FAIRE
+  for(int i=0 ; i<r.voitures.size() ; i++){
+    if(r.voitures.at(i).identification == Id){ // Trouve la voiture correspondante à Id
+      if(r.voitures.at(i).ralenti == true){
+        res = true;
+        break;
+      }
+    }
+  }
   return res;
 }
 
+// Defini une probabilié pv
 void setPV(Route &r, double newPV) {
   r.pv = newPV; //définie une nouvelle probabilité de freinage
 }
 
+// Défini une nouvelle vmax
 void setVMax(Route &r, int newVMax) {
   r.vmax = newVMax; //définie une nouvelle vitesse max
 }
 
-/* supprimer la voiture de nom donne, si elle existe, sinon ne fait rien */
+// supprimer la voiture donnée, si elle existe, sinon ne fait rien
 void supprimer(Route &r, char Id) {
   for (int i = 0; i < r.voitures.size(); i++) {
-    if (r.voitures.at(i).identification == Id) {
-        r.voitures.erase(r.voitures.begin() + i); //bizarre nan ?
-        break;
+    if (r.voitures.at(i).identification == Id) { // Trouve la voiture à supprimer et la supprime
+      r.voitures.erase(r.voitures.at(i));
+      break;
     }
   }
 }
@@ -303,7 +308,9 @@ void test1Ter() {
   ajouter(r, 7); ajouter(r, 1);
   cout << "Ajout des voitures \n";
   afficherR(r);
+
   setPV(r, 0.5);
+  
   simuler(r, 11);
   afficherR(r);
   // une voiture s'incruste devant A.
