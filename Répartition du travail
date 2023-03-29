@@ -1,0 +1,24 @@
+Voici les tâches réalisée par chaque membre du binôme :
+Les fonctions qui ne sont pas marquées ont été faites par nous 2
+Raphael :
+- Fonction test bouchon
+- Accelerer
+- SaVitesse
+- Commentaire dans les fonctions
+- Version du code plus lisible pour les tests
+- voiture.h
+- Deplacer
+- SetVmax
+
+
+Julien :
+- initialiser
+- nommer_voiture
+- AfficherR
+- Ralentir
+- afficherV
+- aRalenti
+- supprimer
+- Commentaire des en-tête de fonction
+- setPV
+
