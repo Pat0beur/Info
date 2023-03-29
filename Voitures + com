@@ -227,8 +227,8 @@ void setVMax(Route &r, int newVMax) {
 // supprimer la voiture donnée, si elle existe, sinon ne fait rien
 void supprimer(Route &r, char Id) {
   for (int i = 0; i < r.voitures.size(); i++) {
-    if (r.voitures.at(i).identification == Id) { // Trouve la voiture à supprimer et la supprime
-      r.voitures.erase(r.voitures.at(i));
+    if (r.voitures.at(i).identification == Id) { // Trouve la voiture à supprimer
+      r.voitures.erase(r.voitures.begin() + i); // Supprimer la case correspondante
       break;
     }
   }
